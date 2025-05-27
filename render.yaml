@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: backend-atemoh
+    env: node
+    plan: free
+    branch: main
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: MONGODB_URI
+        value: mongodb+srv://gabrieltakarada:UxLyyY8DOuj10YZM@cluster0.yds9ruq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
