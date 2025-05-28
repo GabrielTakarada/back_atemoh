@@ -26,9 +26,10 @@ exports.listarProdutos = async (req, res) => {
 exports.buscarProdutoPorId = async (req, res) => {
   try {
     const produtoId = req.params.id;
+    console.log('ID recebido:', produtoId);
 
-    // Verifica se é um ObjectId válido
     if (!ObjectId.isValid(produtoId)) {
+      console.log('ID inválido');
       return res.status(400).json({ message: 'ID inválido' });
     }
 
@@ -36,15 +37,18 @@ exports.buscarProdutoPorId = async (req, res) => {
     const produto = await db.collection('produtos').findOne({ _id: new ObjectId(produtoId) });
 
     if (!produto) {
+      console.log('Produto não encontrado no banco');
       return res.status(404).json({ message: 'Produto não encontrado' });
     }
 
+    console.log('Produto encontrado:', produto);
     res.json(produto);
   } catch (error) {
     console.error('Erro ao buscar produto por ID:', error);
     res.status(500).json({ message: 'Erro ao buscar produto por ID', error });
   }
 };
+
 
 
 
