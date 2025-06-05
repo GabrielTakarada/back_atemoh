@@ -15,8 +15,29 @@ exports.criarProduto = async (req, res) => {
 exports.listarProdutos = async (req, res) => {
   try {
     const db = await connectDB();
-    const produtos = await db.collection('produtos').find().toArray();
-    res.json(produtos);
+
+    // Pega page e limit da query string com valores padrão
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 6;
+
+    // Calcula quantos documentos pular
+    const skip = (page - 1) * limit;
+
+    const produtos = await db.collection('produtos')
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .toArray();
+
+    // Conta total para frontend opcionalmente saber quantas páginas tem
+    const total = await db.collection('produtos').countDocuments();
+
+    res.json({
+      produtos,
+      paginaAtual: page,
+      totalPaginas: Math.ceil(total / limit),
+      totalItens: total,
+    });
   } catch (error) {
     console.error('Erro ao buscar produtos:', error);
     res.status(500).json({ message: 'Erro ao buscar produtos', error });
