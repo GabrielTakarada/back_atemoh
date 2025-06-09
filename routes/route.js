@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const produtoController = require('../controllers/controller');
-const uploadVideo = require('../middlewares/uploadVideo');
-const uploadPdf = require('../middlewares/uploadPdf');
+const uploadVideo = require('../middleware/uploadVideo');
+const uploadPdf = require('../middleware/uploadPdf');
 
 // CRUD
 router.post('/produtos', produtoController.criarProduto);
