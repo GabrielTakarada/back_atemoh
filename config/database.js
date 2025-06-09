@@ -16,7 +16,7 @@ async function connectDB() {
   try {
     if (!db) {
       await client.connect();
-      db = client.db("meubanco"); // ou o nome do seu banco, ex: "produtosDB"
+      db = client.db("meubanco"); // nome do seu banco
       console.log("🟢 Conectado ao MongoDB com sucesso!");
     }
     return db;
@@ -26,4 +26,15 @@ async function connectDB() {
   }
 }
 
-module.exports = connectDB;
+function getDb() {
+  if (!db) {
+    throw new Error("Banco de dados não conectado ainda");
+  }
+  return db;
+}
+
+module.exports = { connectDB, getDb };
+
+
+
+// const uri = "mongodb+srv://gabrieltakarada:UxLyyY8DOuj10YZM@cluster0.yds9ruq.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
