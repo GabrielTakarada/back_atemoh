@@ -2,8 +2,6 @@ const express = require('express');
 const router = express.Router();
 const produtoController = require('../controllers/controller');
 const multer = require('multer');
-
-const multer = require('multer');
 const path = require('path');
 
 // Armazenamento com diskStorage e separação por tipo
