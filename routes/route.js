@@ -40,3 +40,5 @@ router.post('/produtos/upload-pdf-especificacoes', uploadPdf.single('especificac
   const caminhoEspecificacoes = `/uploads/pdfs/${req.file.filename}`;
   res.status(200).json({ especificacoesPdf: caminhoEspecificacoes });
 });
+
+module.exports = router;
