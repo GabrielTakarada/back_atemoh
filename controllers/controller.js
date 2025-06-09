@@ -4,13 +4,43 @@ const { ObjectId } = require('mongodb');
 exports.criarProduto = async (req, res) => {
   try {
     const db = await connectDB();
-    const resultado = await db.collection('produtos').insertOne(req.body);
-    res.status(201).json({ _id: resultado.insertedId, ...req.body });
+    const {
+      caminho,
+      titulo,
+      imagens,
+      numeroSerie,
+      descricao,
+      registroAnvisa,
+      caracteristicas,
+      videos,
+      pdfs
+    } = req.body;
+
+    if (!caminho || !titulo || !numeroSerie || !descricao) {
+      return res.status(400).json({ message: 'Campos obrigatórios ausentes.' });
+    }
+
+    const novoProduto = {
+      caminho,
+      titulo,
+      imagens: imagens || [],
+      numeroSerie,
+      descricao,
+      registroAnvisa: registroAnvisa || '',
+      caracteristicas: caracteristicas || [],
+      videos: videos || [], // suporte a base64 ou links de vídeos
+      pdfs: pdfs || [] // suporte a base64 ou links de PDFs
+    };
+
+    const resultado = await db.collection('produtos').insertOne(novoProduto);
+    res.status(201).json({ _id: resultado.insertedId, ...novoProduto });
+
   } catch (error) {
-    console.error('Erro ao salvar o produto:', error);
+    console.error('[Produto] Erro ao salvar o produto:', error);
     res.status(500).json({ message: 'Erro ao salvar o produto', error });
   }
 };
+
 
 exports.listarProdutos = async (req, res) => {
   try {
@@ -24,10 +54,12 @@ exports.listarProdutos = async (req, res) => {
     const skip = (page - 1) * limit;
 
     const produtos = await db.collection('produtos')
-      .find()
-      .skip(skip)
-      .limit(limit)
-      .toArray();
+    .find()
+    .sort({ _id: -1 })
+    .skip(skip)
+    .limit(limit)
+    .toArray();
+
 
     // Conta total para frontend opcionalmente saber quantas páginas tem
     const total = await db.collection('produtos').countDocuments();
