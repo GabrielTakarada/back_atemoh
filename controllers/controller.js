@@ -3,7 +3,7 @@ const { ObjectId } = require('mongodb');
 
 exports.criarProduto = async (req, res) => {
   try {
-    const db = getDb();
+    const db = connectDB();
     const produtosCollection = db.collection('produtos');
 
     const {
