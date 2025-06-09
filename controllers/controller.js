@@ -3,46 +3,44 @@ const { ObjectId } = require('mongodb');
 
 exports.criarProduto = async (req, res) => {
   try {
+    const db = getDb();
+    const produtosCollection = db.collection('produtos');
+
     const {
       caminho,
       titulo,
       numeroSerie,
       descricao,
-      registroAnvisa
+      registroAnvisa,
+      caracteristicas // Recebido como JSON string no frontend
     } = req.body;
 
-    const caracteristicas = JSON.parse(req.body.caracteristicas || '[]');
+    const imagemPrincipal = req.files['imagemPrincipal']?.[0]?.path || '';
+    const outrasImagens = req.files['outrasImagens']?.map(file => file.path) || [];
+    const video = req.files['video']?.[0]?.path || '';
+    const manualPdf = req.files['manualPdf']?.[0]?.path || '';
+    const especificacoesPdf = req.files['especificacoesPdf']?.[0]?.path || '';
 
-    const imagemPrincipal = req.files['imagemPrincipal']?.[0] || null;
-    const outrasImagens = req.files['outrasImagens'] || [];
-    const video = req.files['video']?.[0] || null;
-    const manualPdf = req.files['manualPdf']?.[0] || null;
-    const especificacoesPdf = req.files['especificacoesPdf']?.[0] || null;
-
-    // Exemplo de salvamento no MongoDB
-    const produto = {
+    const novoProduto = {
       caminho,
       titulo,
       numeroSerie,
       descricao,
       registroAnvisa,
-      caracteristicas,
-      imagemPrincipal: imagemPrincipal?.buffer, // ou salve como caminho
-      outrasImagens: outrasImagens.map(img => img.buffer),
-      video: video?.buffer,
-      pdfs: {
-        manual: manualPdf?.buffer,
-        especificacoes: especificacoesPdf?.buffer
-      }
+      imagemPrincipal,
+      outrasImagens,
+      video,
+      manualPdf,
+      especificacoesPdf,
+      caracteristicas: JSON.parse(caracteristicas)
     };
 
-    // Salvar no banco (supondo que tenha um model)
-    // await db.collection('produtos').insertOne(produto);
+    const resultado = await produtosCollection.insertOne(novoProduto);
 
-    res.status(201).json({ message: 'Produto salvo com sucesso!' });
-  } catch (err) {
-    console.error('[Produto] Erro ao salvar o produto:', err);
-    res.status(500).send('Erro ao salvar o produto.');
+    res.status(201).json({ message: 'Produto criado com sucesso!', produtoId: resultado.insertedId });
+  } catch (error) {
+    console.error('Erro ao criar produto:', error);
+    res.status(500).json({ message: 'Erro ao criar produto', erro: error.message });
   }
 };
 

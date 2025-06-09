@@ -3,11 +3,30 @@ const router = express.Router();
 const produtoController = require('../controllers/controller');
 const multer = require('multer');
 
-// Configurar o Multer (armazenamento em memória ou destino fixo)
-const storage = multer.memoryStorage(); // ou configure com destino e filename se quiser salvar localmente
-const upload = multer({
-  storage: storage,
+const multer = require('multer');
+const path = require('path');
+
+// Armazenamento com diskStorage e separação por tipo
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    if (file.fieldname === 'imagemPrincipal' || file.fieldname === 'outrasImagens') {
+      cb(null, 'uploads/imagens');
+    } else if (file.fieldname === 'video') {
+      cb(null, 'uploads/videos');
+    } else if (file.fieldname === 'manualPdf' || file.fieldname === 'especificacoesPdf') {
+      cb(null, 'uploads/pdfs');
+    } else {
+      cb(null, 'uploads/outros');
+    }
+  },
+  filename: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    const filename = `${Date.now()}-${file.fieldname}${ext}`;
+    cb(null, filename);
+  }
 });
+
+const upload = multer({ storage });
 
 const uploadCampos = upload.fields([
   { name: 'imagemPrincipal', maxCount: 1 },
@@ -16,6 +35,7 @@ const uploadCampos = upload.fields([
   { name: 'manualPdf', maxCount: 1 },
   { name: 'especificacoesPdf', maxCount: 1 }
 ]);
+
 
 // 📌 Endpoint principal de criação com campos e arquivos
 router.post('/produtos', uploadCampos, produtoController.criarProduto);
