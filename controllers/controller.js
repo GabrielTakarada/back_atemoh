@@ -1,4 +1,4 @@
-const connectDB = require('../config/database');
+const { connectDB } = require('../config/database');
 const { ObjectId } = require('mongodb');
 
 exports.criarProduto = async (req, res) => {
