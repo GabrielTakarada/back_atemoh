@@ -18,7 +18,12 @@ app.use('/uploads', express.static('uploads'));
 app.use('/api', produtoRoutes);
 app.use('/api', eventosRoutes);
 
-const PORT = process.env.PORT || 5000;
+app.get('/', (req, res) => {
+  res.send('API funcionando corretamente!');
+});
+
+
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
