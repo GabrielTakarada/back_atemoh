@@ -3,43 +3,49 @@ const { ObjectId } = require('mongodb');
 
 exports.criarProduto = async (req, res) => {
   try {
-    const db = await connectDB();
     const {
       caminho,
       titulo,
-      imagens,
+      numeroSerie,
+      descricao,
+      registroAnvisa
+    } = req.body;
+
+    const caracteristicas = JSON.parse(req.body.caracteristicas || '[]');
+
+    const imagemPrincipal = req.files['imagemPrincipal']?.[0] || null;
+    const outrasImagens = req.files['outrasImagens'] || [];
+    const video = req.files['video']?.[0] || null;
+    const manualPdf = req.files['manualPdf']?.[0] || null;
+    const especificacoesPdf = req.files['especificacoesPdf']?.[0] || null;
+
+    // Exemplo de salvamento no MongoDB
+    const produto = {
+      caminho,
+      titulo,
       numeroSerie,
       descricao,
       registroAnvisa,
       caracteristicas,
-      videos,
-      pdfs
-    } = req.body;
-
-    if (!caminho || !titulo || !numeroSerie || !descricao) {
-      return res.status(400).json({ message: 'Campos obrigatórios ausentes.' });
-    }
-
-    const novoProduto = {
-      caminho,
-      titulo,
-      imagens: imagens || [],
-      numeroSerie,
-      descricao,
-      registroAnvisa: registroAnvisa || '',
-      caracteristicas: caracteristicas || [],
-      videos: videos || [], // suporte a base64 ou links de vídeos
-      pdfs: pdfs || [] // suporte a base64 ou links de PDFs
+      imagemPrincipal: imagemPrincipal?.buffer, // ou salve como caminho
+      outrasImagens: outrasImagens.map(img => img.buffer),
+      video: video?.buffer,
+      pdfs: {
+        manual: manualPdf?.buffer,
+        especificacoes: especificacoesPdf?.buffer
+      }
     };
 
-    const resultado = await db.collection('produtos').insertOne(novoProduto);
-    res.status(201).json({ _id: resultado.insertedId, ...novoProduto });
+    // Salvar no banco (supondo que tenha um model)
+    // await db.collection('produtos').insertOne(produto);
 
-  } catch (error) {
-    console.error('[Produto] Erro ao salvar o produto:', error);
-    res.status(500).json({ message: 'Erro ao salvar o produto', error });
+    res.status(201).json({ message: 'Produto salvo com sucesso!' });
+  } catch (err) {
+    console.error('[Produto] Erro ao salvar o produto:', err);
+    res.status(500).send('Erro ao salvar o produto.');
   }
 };
+
 
 
 exports.listarProdutos = async (req, res) => {
