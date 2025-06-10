@@ -17,9 +17,21 @@ exports.criarProduto = async (req, res) => {
 
     const imagemPrincipal = req.files['imagemPrincipal']?.[0]?.path || '';
     const outrasImagens = req.files['outrasImagens']?.map(file => file.path) || [];
-    const video = req.files['video']?.[0]?.path || '';
-    const manualPdf = req.files['manualPdf']?.[0]?.path || '';
-    const especificacoesPdf = req.files['especificacoesPdf']?.[0]?.path || '';
+    const video = {
+  titulo: req.body.tituloVideo || '',
+  caminho: req.files['video']?.[0]?.path || ''
+};
+
+const manualPdf = {
+  titulo: req.body.tituloManualPdf || '',
+  caminho: req.files['manualPdf']?.[0]?.path || ''
+};
+
+const especificacoesPdf = {
+  titulo: req.body.tituloEspecificacoesPdf || '',
+  caminho: req.files['especificacoesPdf']?.[0]?.path || ''
+};
+
 
     const novoProduto = {
       caminho,
