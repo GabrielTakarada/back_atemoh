@@ -34,7 +34,7 @@ const upload = multer({ storage });
 const uploadMiddleware = upload.fields([
   { name: 'imagemPrincipal', maxCount: 1 },
   { name: 'outrasImagens', maxCount: 10 },
-  { name: 'video', maxCount: 1 },
+  { name: 'video', maxCount: 3 },
   { name: 'manualPdf', maxCount: 1 },
   { name: 'especificacoesPdf', maxCount: 1 },
 ]);
