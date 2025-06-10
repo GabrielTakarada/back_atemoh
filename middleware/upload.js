@@ -2,11 +2,10 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-// Configura o destino dinamicamente conforme o campo
+// Configurações do storage (igual ao que você tem)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     let folder = 'uploads/outros';
-
     if (file.fieldname === 'imagemPrincipal' || file.fieldname === 'outrasImagens') {
       folder = 'uploads/imagens';
     } else if (file.fieldname === 'video') {
@@ -14,12 +13,9 @@ const storage = multer.diskStorage({
     } else if (file.fieldname === 'manualPdf' || file.fieldname === 'especificacoesPdf') {
       folder = 'uploads/pdfs';
     }
-
-    // Garante que a pasta existe
     if (!fs.existsSync(folder)) {
       fs.mkdirSync(folder, { recursive: true });
     }
-
     cb(null, folder);
   },
   filename: (req, file, cb) => {
@@ -31,12 +27,4 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-const uploadMiddleware = upload.fields([
-  { name: 'imagemPrincipal', maxCount: 1 },
-  { name: 'outrasImagens', maxCount: 10 },
-  { name: 'video', maxCount: 3 },
-  { name: 'manualPdf', maxCount: 1 },
-  { name: 'especificacoesPdf', maxCount: 1 },
-]);
-
-module.exports = uploadMiddleware;
+module.exports = upload;  // exporta o objeto multer
