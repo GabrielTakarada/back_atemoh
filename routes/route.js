@@ -45,7 +45,7 @@ router.put('/produtos/:id', produtoController.atualizarProduto);
 router.delete('/produtos/:id', produtoController.deletarProduto);
 
 // Rotas separadas (se quiser manter uploads separados)
-router.post('/produtos/upload-videos', require('../middleware/uploadVideo').array('videos', 3), (req, res) => {
+router.post('/produtos/upload-videos', require('../middleware/upload').array('videos', 3), (req, res) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({ message: 'Nenhum vídeo enviado.' });
   }
